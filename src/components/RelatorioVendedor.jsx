@@ -165,8 +165,7 @@ const MesIndividual = ({ vendedor, mes, o }) => {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard icon={DollarSign} tone="bg-green-50 text-green-600" label="Meu faturamento" value={brl0(o.total)}
-          sub={dl && !dl.novo ? undefined : 'no período'} />
+        <KpiCard icon={DollarSign} tone="bg-green-50 text-green-600" label="Faturamento" value={brl0(o.total)} sub="no período" />
         <KpiCard icon={Users} tone="bg-blue-50 text-blue-600" label={cliLab === 'atendimentos' ? 'Atendimentos' : 'Clientes'} value={o.clientes} sub="com movimento" />
         <KpiCard icon={TrendingUp} tone="bg-orange-50 text-orange-600" label="Ticket médio" value={brl0(o.ticket)} sub="por cliente" />
         <KpiCard icon={Trophy} tone="bg-amber-50 text-amber-600" label="Posição" value={`${pos}º`} sub={`de ${total} vendedores`} />
@@ -248,7 +247,7 @@ const EvolucaoIndividual = ({ vendedor }) => {
             <span className="text-xs font-semibold text-gray-700 tabular-nums">{o ? comp(o.total) : '—'}</span>
             <div className="w-full flex items-end justify-center" style={{ height: '96px' }}>
               <div
-                className="w-full max-w-[72px] rounded-t transition-all"
+                className="w-full max-w-[130px] rounded-t transition-all"
                 style={{ height: `${o ? Math.max(4, (o.total / max) * 96) : 3}px`, background: MONTH_COLOR[m], opacity: o ? 1 : 0.3 }}
                 title={o ? `${nomeMes(m)} — ${brl(o.total)}${o.parcial ? ' (parcial)' : ''}` : `${nomeMes(m)} — sem vendas`}
               />

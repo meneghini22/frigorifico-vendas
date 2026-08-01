@@ -23,14 +23,14 @@ const MetasVendedor = ({ vendedor }) => {
         {pos}º de {total} vendedores em {DADOS.meta[mesRef].nome}/2026 · o que fazer para subir
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="flex flex-wrap gap-3">
         {metas.map((m, i) => {
           const Icon = m.tipo === 'tendencia'
             ? (m.positivo ? TrendingUp : TrendingDown)
             : (ICON[m.tipo] || Target);
           const accent = m.tipo === 'tendencia' && !m.positivo ? 'text-red-400' : 'text-[#FF8C42]';
           return (
-            <div key={i} className="bg-white/5 border border-white/10 rounded-lg p-4">
+            <div key={i} className="flex-1 basis-[240px] bg-white/5 border border-white/10 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1.5">
                 <Icon className={`w-4 h-4 ${accent}`} />
                 <p className="font-semibold text-sm">{m.titulo}</p>
