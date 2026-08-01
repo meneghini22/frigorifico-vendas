@@ -5,6 +5,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import LoginPage from '@/pages/LoginPage';
 import AdminDashboard from '@/pages/AdminDashboard';
+import RelatoriosVendas from '@/pages/RelatoriosVendas';
 import VendedorDashboard from '@/pages/VendedorDashboard';
 import ClienteDashboard from '@/pages/ClienteDashboard';
 import OrderReservationPage from '@/pages/OrderReservationPage';
@@ -27,6 +28,15 @@ function App() {
             }
           />
           
+          <Route
+            path="/admin/relatorios"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'Admin']}>
+                <RelatoriosVendas />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/vendedor"
             element={

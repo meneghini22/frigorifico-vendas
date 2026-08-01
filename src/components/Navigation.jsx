@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Users, ShoppingCart, LogOut, BarChart3, Package, Menu, X, LogIn } from 'lucide-react';
+import { Home, Users, ShoppingCart, LogOut, BarChart3, Package, Menu, X, LogIn, FileBarChart2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 
@@ -19,6 +19,7 @@ const Navigation = () => {
     ...(isAdmin ? [
       { icon: BarChart3, label: 'Dashboard', path: '/admin' },
       { icon: Package, label: 'Pedidos', path: '/admin' },
+      { icon: FileBarChart2, label: 'Relatórios', path: '/admin/relatorios' },
     ] : []),
     ...(isVendor ? [
       { icon: Home, label: 'Dashboard', path: '/vendedor' },
