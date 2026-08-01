@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { BarChart3, UserCircle2, KeyRound, ShieldAlert, Users } from 'lucide-react';
 import ReportHeader from '@/components/ReportHeader';
 import MercadoPanel from '@/components/MercadoPanel';
-import { VENDEDORES, senhaDoVendedor, ADMIN_SENHA, GESTOR_SENHA } from '@/context/AuthContext';
+import { VENDEDORES, senhaDoVendedor, ADMIN_SENHA, GESTOR_SENHA, authMode } from '@/context/AuthContext';
 import { DADOS, MESES } from '@/data/relatoriosVendas';
 
 const brl0 = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(v);
@@ -45,7 +45,11 @@ const AdminPage = () => {
               <KeyRound className="w-5 h-5 text-[#FF8C42]" />
               <h3 className="text-lg font-bold text-gray-900">Acessos e senhas</h3>
             </div>
-            <p className="text-xs text-gray-400 mb-4">Cada vendedor entra com a senha abaixo. Padrão: nome em minúsculo + “1”.</p>
+            <p className="text-xs text-gray-400 mb-4">
+              {authMode === 'supabase'
+                ? 'Login real ativo (Supabase Auth). Gerencie contas e senhas em Authentication → Users no painel do Supabase; a lista abaixo é apenas referência do modo local.'
+                : 'Cada vendedor entra com a senha abaixo. Padrão: nome em minúsculo + “1”.'}
+            </p>
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[420px]">
                 <thead>

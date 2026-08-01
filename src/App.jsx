@@ -9,7 +9,8 @@ import AdminPage from '@/pages/AdminPage';
 import '@/styles/theme.css';
 
 const Home = () => {
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, role, loading } = useAuth();
+  if (loading) return null;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (role === 'vendedor') return <Navigate to="/vendedor" replace />;
   if (role === 'admin') return <Navigate to="/admin" replace />;

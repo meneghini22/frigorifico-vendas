@@ -2,22 +2,28 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BarChart3, Lock, LogIn, AlertCircle } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
+import { BarChart3, Lock, Mail, LogIn, AlertCircle, Loader2 } from 'lucide-react';
+import { useAuth, authMode } from '@/context/AuthContext';
 
 const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [erro, setErro] = useState(false);
+  const [erro, setErro] = useState('');
+  const [carregando, setCarregando] = useState(false);
+  const supa = authMode === 'supabase';
 
-  const entrar = (e) => {
+  const entrar = async (e) => {
     e.preventDefault();
-    const r = login(senha);
+    setErro('');
+    setCarregando(true);
+    const r = await login({ email, senha });
+    setCarregando(false);
     if (r.ok) {
       navigate(r.role === 'vendedor' ? '/vendedor' : r.role === 'admin' ? '/admin' : '/painel');
     } else {
-      setErro(true);
+      setErro(r.error || 'Senha inválida. Tente novamente.');
     }
   };
 
@@ -38,14 +44,31 @@ const LoginPage = () => {
           </div>
 
           <form onSubmit={entrar} className="bg-[#242424] border border-gray-800 rounded-2xl p-6 shadow-xl">
-            <label className="block text-sm font-medium text-gray-300 mb-2">Senha de acesso</label>
+            {supa && (
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-300 mb-2">E-mail</label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <input
+                    type="email"
+                    autoFocus
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); setErro(''); }}
+                    placeholder="seu@email.com"
+                    className="w-full pl-10 pr-4 py-3 rounded-lg bg-[#1a1a1a] border border-gray-700 text-white outline-none focus:border-[#FF8C42] transition-colors"
+                  />
+                </div>
+              </div>
+            )}
+
+            <label className="block text-sm font-medium text-gray-300 mb-2">Senha{supa ? '' : ' de acesso'}</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
               <input
                 type="password"
-                autoFocus
+                autoFocus={!supa}
                 value={senha}
-                onChange={(e) => { setSenha(e.target.value); setErro(false); }}
+                onChange={(e) => { setSenha(e.target.value); setErro(''); }}
                 placeholder="Digite sua senha…"
                 className="w-full pl-10 pr-4 py-3 rounded-lg bg-[#1a1a1a] border border-gray-700 text-white outline-none focus:border-[#FF8C42] transition-colors"
               />
@@ -53,20 +76,22 @@ const LoginPage = () => {
 
             {erro && (
               <p className="flex items-center gap-2 text-red-400 text-sm mt-3">
-                <AlertCircle className="w-4 h-4" /> Senha inválida. Tente novamente.
+                <AlertCircle className="w-4 h-4 flex-none" /> {erro}
               </p>
             )}
 
             <button
               type="submit"
-              className="w-full mt-5 bg-[#FF8C42] hover:bg-[#E67E22] text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
+              disabled={carregando}
+              className="w-full mt-5 bg-[#FF8C42] hover:bg-[#E67E22] disabled:opacity-60 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
             >
-              <LogIn className="w-5 h-5" /> Entrar
+              {carregando ? <Loader2 className="w-5 h-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
+              {carregando ? 'Entrando…' : 'Entrar'}
             </button>
           </form>
 
           <p className="text-center text-gray-600 text-xs mt-6">
-            Cada vendedor usa sua própria senha. Gestores e administração têm acesso próprio.
+            Cada vendedor usa seu próprio acesso. Gestores e administração têm acesso próprio.
           </p>
         </motion.div>
       </div>
