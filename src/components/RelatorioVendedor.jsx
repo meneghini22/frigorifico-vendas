@@ -4,6 +4,7 @@ import {
   DollarSign, Users, TrendingUp, TrendingDown, Minus, Trophy, Info, UserCircle2,
 } from 'lucide-react';
 import { DADOS, MESES, PREV } from '@/data/relatoriosVendas';
+import MetasVendedor from '@/components/MetasVendedor';
 
 /* ---------- helpers ---------- */
 const brl = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
@@ -58,10 +59,12 @@ const KpiCard = ({ icon: Icon, tone, label, value, sub }) => (
 );
 
 /* ---------- main ---------- */
-const RelatorioVendedor = ({ vendedor: vendedorProp }) => {
+const RelatorioVendedor = ({ vendedor: vendedorProp, locked = false }) => {
   const vendedores = useMemo(todosVendedores, []);
-  const [vendedor, setVendedor] = useState(() =>
+  const [vendedorState, setVendedorState] = useState(() =>
     vendedorProp || localStorage.getItem('schlosser_vendedor_relatorio') || '');
+  const vendedor = locked ? vendedorProp : vendedorState;
+  const setVendedor = setVendedorState;
 
   const mesesComDados = useMemo(
     () => MESES.filter((m) => DADOS[m][vendedor]),
@@ -79,7 +82,8 @@ const RelatorioVendedor = ({ vendedor: vendedorProp }) => {
 
   return (
     <div className="max-w-4xl mx-auto flex flex-col gap-6">
-      {/* seletor de vendedor */}
+      {/* seletor de vendedor (oculto quando travado no vendedor logado) */}
+      {!locked && (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex items-center gap-2 text-gray-700 font-semibold text-sm">
           <UserCircle2 className="w-5 h-5 text-[#FF8C42]" />
@@ -94,6 +98,7 @@ const RelatorioVendedor = ({ vendedor: vendedorProp }) => {
           {vendedores.map((v) => <option key={v} value={v}>{v}</option>)}
         </select>
       </div>
+      )}
 
       {!vendedor ? (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10 text-center text-gray-400">
@@ -125,6 +130,7 @@ const RelatorioVendedor = ({ vendedor: vendedorProp }) => {
 
           <motion.div key={mesAtivo} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className="flex flex-col gap-6">
             <MesIndividual vendedor={vendedor} mes={mesAtivo} o={o} />
+            <MetasVendedor vendedor={vendedor} />
             <EvolucaoIndividual vendedor={vendedor} />
           </motion.div>
         </>

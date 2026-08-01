@@ -1,117 +1,77 @@
+import React, { createContext, useContext, useState } from 'react';
+import { DADOS, MESES } from '@/data/relatoriosVendas';
 
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { useToast } from '@/components/ui/use-toast';
-import { schlosserApi } from '@/services/schlosserApi';
+/*
+ * Login simples por SENHA. Papéis:
+ *  - vendedor: senha = nome em minúsculo + "1"  (ex.: maykel1, heitor1)
+ *  - gestor:   senha = "gestor1"   (analisa todos os vendedores)
+ *  - admin:    senha = "admin1"    (dono — acesso total)
+ *
+ * ATENÇÃO: isto é um controle de acesso apenas no navegador (front-end).
+ * As senhas ficam no código do site e NÃO oferecem segurança real.
+ * Para proteção de verdade seria necessário um backend/autenticação server-side.
+ */
 
-export const AuthContext = createContext(null);
+export const ADMIN_SENHA = 'admin1';
+export const GESTOR_SENHA = 'gestor1';
 
+const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, '');
+
+export const VENDEDORES = [...new Set(MESES.flatMap((m) => Object.keys(DADOS[m])))]
+  .sort((a, b) => a.localeCompare(b, 'pt-BR'));
+
+export const senhaDoVendedor = (nome) => `${norm(nome)}1`;
+
+function resolver(senha) {
+  const s = senha.trim();
+  if (s === ADMIN_SENHA) return { role: 'admin', nome: 'Administrador' };
+  if (s === GESTOR_SENHA) return { role: 'gestor', nome: 'Gestor' };
+  const v = VENDEDORES.find((n) => senhaDoVendedor(n) === s.toLowerCase());
+  if (v) return { role: 'vendedor', nome: v, vendedor: v };
+  return null;
+}
+
+const AuthContext = createContext(null);
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth precisa do AuthProvider');
+  return ctx;
 };
 
+const KEY = 'zaleski_session';
+
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [clientData, setClientData] = useState(null); // For authenticated client/vendor
-  const [publicCity, setPublicCity] = useState(null); // For public user
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    checkSession();
-  }, []);
-
-  const checkSession = () => {
+  const [user, setUser] = useState(() => {
     try {
-      const storedAuth = localStorage.getItem('schlosser_auth');
-      if (storedAuth) {
-        const parsed = JSON.parse(storedAuth);
-        if (Date.now() - (parsed.timestamp || 0) < 24 * 60 * 60 * 1000) {
-          setUser(parsed);
-        } else {
-          localStorage.removeItem('schlosser_auth');
-        }
-      }
-      
-      const storedClient = localStorage.getItem('schlosser_client_data');
-      if (storedClient) setClientData(JSON.parse(storedClient));
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      if (Date.now() - (s.ts || 0) > 12 * 60 * 60 * 1000) return null; // 12h
+      return s;
+    } catch { return null; }
+  });
 
-      const storedCity = localStorage.getItem('schlosser_public_city');
-      if (storedCity) setPublicCity(JSON.parse(storedCity));
-
-    } catch (error) {
-      localStorage.removeItem('schlosser_auth');
-    } finally {
-      setLoading(false);
-    }
+  const login = (senha) => {
+    const r = resolver(senha);
+    if (!r) return { ok: false };
+    const sess = { ...r, ts: Date.now() };
+    localStorage.setItem(KEY, JSON.stringify(sess));
+    setUser(sess);
+    return { ok: true, role: r.role };
   };
 
-  const login = async (role, key = null) => {
-    setLoading(true);
-    try {
-      const effectiveKey = role === 'public' ? null : key;
-      await schlosserApi.getProducts(role, effectiveKey);
-      
-      const userData = {
-        role,
-        key: effectiveKey,
-        name: role === 'public' ? 'Visitante' : (role === 'vendor' ? 'Vendedor' : 'Administrador'),
-        timestamp: Date.now()
-      };
-
-      localStorage.setItem('schlosser_auth', JSON.stringify(userData));
-      setUser(userData);
-      
-      if (role === 'public') {
-          toast({ title: "Bem-vindo!", description: `Acesso ao catálogo público liberado.` });
-      } else {
-          toast({ title: "Login realizado!", description: `Bem-vindo ao Schlosser Pro V9.` });
-      }
-      return { success: true };
-    } catch (error) {
-      toast({ title: "Erro no login", description: "Credenciais inválidas.", variant: "destructive" });
-      return { success: false, error: error.message };
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('schlosser_auth');
-    localStorage.removeItem('schlosser_client_data');
-    localStorage.removeItem('schlosser_public_city');
-    setUser(null);
-    setClientData(null);
-    setPublicCity(null);
-  };
-
-  const selectClient = (client) => {
-      setClientData(client);
-      localStorage.setItem('schlosser_client_data', JSON.stringify(client));
-  };
-
-  const selectCity = (city) => {
-      setPublicCity(city);
-      localStorage.setItem('schlosser_public_city', JSON.stringify(city));
-  };
+  const logout = () => { localStorage.removeItem(KEY); setUser(null); };
 
   const value = {
     user,
-    clientData,
-    publicCity,
-    loading,
     login,
     logout,
-    selectClient,
-    selectCity,
     isAuthenticated: !!user,
-    isVendor: user?.role === 'vendor',
     isAdmin: user?.role === 'admin',
-    isPublic: user?.role === 'public' || (!user), // Treat undefined as potentially public
-    role: user?.role || 'public',
-    userKey: user?.key
+    isGestor: user?.role === 'gestor',
+    isVendedor: user?.role === 'vendedor',
+    role: user?.role || null,
+    vendedor: user?.vendedor || null,
   };
-
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

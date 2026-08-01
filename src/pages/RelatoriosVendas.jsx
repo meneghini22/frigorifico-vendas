@@ -3,10 +3,10 @@ import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import {
   DollarSign, Users, TrendingUp, TrendingDown, Minus, Award,
-  Info, BarChart3, Calendar, ShoppingCart, LogIn,
+  Info, BarChart3, Calendar,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import Navigation from '@/components/Navigation';
+import ReportHeader from '@/components/ReportHeader';
+import MercadoPanel from '@/components/MercadoPanel';
 import { DADOS, MESES, PREV } from '@/data/relatoriosVendas';
 
 /* ---------- helpers ---------- */
@@ -323,35 +323,14 @@ const TABS = [
   { id: 'evo', label: 'Evolução', icon: TrendingUp },
 ];
 
-const PublicHeader = () => (
-  <header className="bg-[#1a1a1a] text-white shadow-lg sticky top-0 z-50">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex justify-between items-center h-20">
-        <div className="flex items-center">
-          <div className="w-10 h-10 rounded-lg bg-orange-500 flex items-center justify-center rotate-3">
-            <ShoppingCart className="w-6 h-6 text-white" />
-          </div>
-          <div className="ml-3">
-            <h1 className="text-xl font-bold tracking-tight text-white">SISTEMA<span className="text-[#FF8C42]">VENDAS</span></h1>
-            <p className="text-[10px] uppercase tracking-widest text-gray-400">Relatórios · Zaleski</p>
-          </div>
-        </div>
-        <Link to="/login" className="flex items-center text-gray-300 hover:text-[#FF8C42] text-sm font-medium">
-          <LogIn className="w-4 h-4 mr-2" /> Área restrita
-        </Link>
-      </div>
-    </div>
-  </header>
-);
-
-const RelatoriosVendas = ({ publicView = false }) => {
+const RelatoriosVendas = () => {
   const [tab, setTab] = useState('junho');
 
   return (
     <>
       <Helmet><title>Relatórios de Vendas por Vendedor</title></Helmet>
       <div className="min-h-screen bg-gray-50">
-        {publicView ? <PublicHeader /> : <Navigation />}
+        <ReportHeader />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-6">
             <p className="text-[11px] uppercase tracking-widest text-gray-400 font-semibold">Centro de Compras Zaleski Ltda</p>
@@ -381,6 +360,10 @@ const RelatoriosVendas = ({ publicView = false }) => {
           <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
             {tab === 'evo' ? <EvolutionView /> : <MonthView mes={tab} />}
           </motion.div>
+
+          <div className="mt-6">
+            <MercadoPanel />
+          </div>
         </div>
       </div>
     </>

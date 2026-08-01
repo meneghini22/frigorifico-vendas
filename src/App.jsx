@@ -1,16 +1,20 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/context/AuthContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import LoginPage from '@/pages/LoginPage';
-import AdminDashboard from '@/pages/AdminDashboard';
 import RelatoriosVendas from '@/pages/RelatoriosVendas';
-import VendedorDashboard from '@/pages/VendedorDashboard';
-import ClienteDashboard from '@/pages/ClienteDashboard';
-import OrderReservationPage from '@/pages/OrderReservationPage';
-import ConfirmacaoPedidoPublica from '@/pages/ConfirmacaoPedidoPublica';
+import RelatorioVendedorPage from '@/pages/RelatorioVendedorPage';
+import AdminPage from '@/pages/AdminPage';
 import '@/styles/theme.css';
+
+const Home = () => {
+  const { isAuthenticated, role } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (role === 'vendedor') return <Navigate to="/vendedor" replace />;
+  if (role === 'admin') return <Navigate to="/admin" replace />;
+  return <Navigate to="/painel" replace />;
+};
 
 function App() {
   return (
@@ -19,62 +23,19 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
 
-          <Route path="/relatorios" element={<RelatoriosVendas publicView />} />
-          
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute allowedRoles={['admin', 'Admin']}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-          
-          <Route
-            path="/admin/relatorios"
-            element={
-              <ProtectedRoute allowedRoles={['admin', 'Admin']}>
-                <RelatoriosVendas />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/painel" element={
+            <ProtectedRoute allow={['admin', 'gestor']}><RelatoriosVendas /></ProtectedRoute>
+          } />
+          <Route path="/vendedor" element={
+            <ProtectedRoute allow={['admin', 'gestor', 'vendedor']}><RelatorioVendedorPage /></ProtectedRoute>
+          } />
+          <Route path="/admin" element={
+            <ProtectedRoute allow={['admin']}><AdminPage /></ProtectedRoute>
+          } />
 
-          <Route
-            path="/vendedor"
-            element={
-              <ProtectedRoute allowedRoles={['vendor', 'Vendedor']}>
-                <VendedorDashboard />
-              </ProtectedRoute>
-            }
-          />
-          
-          <Route
-            path="/cliente"
-            element={
-              <ProtectedRoute allowedRoles={['public', 'cliente', 'Cliente', 'vendor', 'admin']}>
-                <ClienteDashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/pedido-reservado/:id"
-            element={
-              <ProtectedRoute allowedRoles={['public', 'cliente', 'Cliente', 'vendor', 'admin']}>
-                <OrderReservationPage />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/confirmar/:orderId/:token"
-            element={<ConfirmacaoPedidoPublica />}
-          />
-          
-          <Route path="/" element={<Navigate to="/relatorios" replace />} />
-          <Route path="*" element={<Navigate to="/relatorios" replace />} />
+          <Route path="/" element={<Home />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        <Toaster />
       </Router>
     </AuthProvider>
   );
