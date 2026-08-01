@@ -18,6 +18,8 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+
+          <Route path="/relatorios" element={<RelatoriosVendas publicView />} />
           
           <Route
             path="/admin"
@@ -69,8 +71,8 @@ function App() {
             element={<ConfirmacaoPedidoPublica />}
           />
           
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/relatorios" replace />} />
+          <Route path="*" element={<Navigate to="/relatorios" replace />} />
         </Routes>
         <Toaster />
       </Router>
