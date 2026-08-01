@@ -17,7 +17,7 @@ const MetasVendedor = ({ vendedor }) => {
     <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2b2018] rounded-xl shadow-sm border border-gray-800 p-6 text-white">
       <div className="flex items-center gap-2 mb-1">
         <Trophy className="w-5 h-5 text-[#FF8C42]" />
-        <h3 className="text-lg font-bold">Suas metas</h3>
+        <h3 className="text-lg font-bold text-white">Suas metas</h3>
       </div>
       <p className="text-xs text-gray-400 mb-5">
         {pos}º de {total} vendedores em {DADOS.meta[mesRef].nome}/2026 · o que fazer para subir

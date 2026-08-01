@@ -18,8 +18,9 @@ const ReportHeader = () => {
   return (
     <header className="bg-[#1a1a1a] text-white shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <div className="flex items-center">
+        <div className="flex justify-between items-center h-20 gap-3">
+          <div className="flex items-center gap-4 sm:gap-8 min-w-0">
+          <div className="flex items-center flex-none">
             <div className="w-10 h-10 rounded-lg bg-[#FF8C42] flex items-center justify-center rotate-3">
               <BarChart3 className="w-6 h-6 text-white" />
             </div>
@@ -46,8 +47,9 @@ const ReportHeader = () => {
               </NavLink>
             ))}
           </nav>
+          </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-none">
             <div className="text-right hidden sm:block">
               <p className="text-sm font-semibold text-white leading-none">{user?.nome}</p>
               <p className="text-[10px] text-[#FF8C42] font-bold tracking-wider">{papel}</p>
