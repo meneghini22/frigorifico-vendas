@@ -5,6 +5,7 @@ import Navigation from '@/components/Navigation';
 import ProductCard from '@/components/ProductCard';
 import SearchBar from '@/components/SearchBar';
 import CartItem from '@/components/CartItem';
+import RelatorioVendedor from '@/components/RelatorioVendedor';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { schlosserApi } from '@/services/schlosserApi';
@@ -127,6 +128,7 @@ const VendedorDashboard = () => {
               <button onClick={() => setActiveTab('catalog')} className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'catalog' ? 'bg-[#FF8C42] text-white' : 'text-gray-500 hover:text-gray-900'}`}>Produtos</button>
               <button onClick={() => setActiveTab('cart')} className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'cart' ? 'bg-[#FF8C42] text-white' : 'text-gray-500 hover:text-gray-900'}`}>Pedido Atual ({cart.length})</button>
               <button onClick={() => setActiveTab('history')} className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'history' ? 'bg-[#FF8C42] text-white' : 'text-gray-500 hover:text-gray-900'}`}>Histórico</button>
+              <button onClick={() => setActiveTab('report')} className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'report' ? 'bg-[#FF8C42] text-white' : 'text-gray-500 hover:text-gray-900'}`}>Meu Relatório</button>
             </div>
           </div>
 
@@ -209,6 +211,8 @@ const VendedorDashboard = () => {
               {orders.length === 0 && <p className="text-center text-gray-500 py-10">Nenhum pedido registrado.</p>}
             </div>
           )}
+
+          {activeTab === 'report' && <RelatorioVendedor />}
         </div>
       </div>
     </>
