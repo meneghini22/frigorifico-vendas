@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { DadosProvider } from '@/context/DadosContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import LoginPage from '@/pages/LoginPage';
 import RelatoriosVendas from '@/pages/RelatoriosVendas';
@@ -21,6 +22,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <DadosProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
 
@@ -37,6 +39,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </DadosProvider>
       </Router>
     </AuthProvider>
   );
