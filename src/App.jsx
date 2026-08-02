@@ -6,6 +6,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import LoginPage from '@/pages/LoginPage';
 import RelatoriosVendas from '@/pages/RelatoriosVendas';
 import RelatorioVendedorPage from '@/pages/RelatorioVendedorPage';
+import ProspeccaoPage from '@/pages/ProspeccaoPage';
 import AdminPage from '@/pages/AdminPage';
 import '@/styles/theme.css';
 
@@ -31,6 +32,9 @@ function App() {
           } />
           <Route path="/vendedor" element={
             <ProtectedRoute allow={['admin', 'gestor', 'vendedor']}><RelatorioVendedorPage /></ProtectedRoute>
+          } />
+          <Route path="/prospeccao" element={
+            <ProtectedRoute allow={['admin', 'gestor']}><ProspeccaoPage /></ProtectedRoute>
           } />
           <Route path="/admin" element={
             <ProtectedRoute allow={['admin']}><AdminPage /></ProtectedRoute>

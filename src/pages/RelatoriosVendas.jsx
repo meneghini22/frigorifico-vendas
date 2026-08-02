@@ -5,8 +5,10 @@ import {
   DollarSign, Users, TrendingUp, TrendingDown, Minus, Award,
   Info, BarChart3, Calendar,
 } from 'lucide-react';
+import { Repeat } from 'lucide-react';
 import ReportHeader from '@/components/ReportHeader';
 import MercadoPanel from '@/components/MercadoPanel';
+import RetencaoView from '@/components/RetencaoView';
 import { DADOS, MESES, PREV } from '@/data/relatoriosVendas';
 
 /* ---------- helpers ---------- */
@@ -321,6 +323,7 @@ const EvolutionView = () => {
 const TABS = [
   ...MESES.map((m) => ({ id: m, label: DADOS.meta[m].nome, icon: Calendar })),
   { id: 'evo', label: 'Evolução', icon: TrendingUp },
+  { id: 'ret', label: 'Retenção', icon: Repeat },
 ];
 
 const RelatoriosVendas = () => {
@@ -358,7 +361,7 @@ const RelatoriosVendas = () => {
           </div>
 
           <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-            {tab === 'evo' ? <EvolutionView /> : <MonthView mes={tab} />}
+            {tab === 'evo' ? <EvolutionView /> : tab === 'ret' ? <RetencaoView /> : <MonthView mes={tab} />}
           </motion.div>
 
           <div className="mt-6">

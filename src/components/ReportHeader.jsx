@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { BarChart3, UserCircle2, Shield, LogOut } from 'lucide-react';
+import { BarChart3, UserCircle2, Shield, LogOut, Target } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 const ReportHeader = () => {
@@ -10,6 +10,7 @@ const ReportHeader = () => {
   const links = [];
   if (isAdmin || isGestor) links.push({ to: '/painel', label: 'Análise', icon: BarChart3 });
   links.push({ to: '/vendedor', label: isAdmin || isGestor ? 'Por vendedor' : 'Meu relatório', icon: UserCircle2 });
+  if (isAdmin || isGestor) links.push({ to: '/prospeccao', label: 'Prospecção', icon: Target });
   if (isAdmin) links.push({ to: '/admin', label: 'Admin', icon: Shield });
 
   const sair = () => { logout(); navigate('/login'); };
