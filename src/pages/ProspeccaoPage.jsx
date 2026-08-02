@@ -1,17 +1,20 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { MapPin, Target, Store, Info } from 'lucide-react';
+import { MapPin, Target, Store, Info, CheckCircle2 } from 'lucide-react';
 import ReportHeader from '@/components/ReportHeader';
 import { PROSPECCAO as P } from '@/data/prospeccao';
 
 const statusInfo = {
   'a-contatar': { label: 'A contatar', cls: 'bg-blue-50 text-blue-600' },
   'em-negociacao': { label: 'Em negociação', cls: 'bg-orange-50 text-orange-600' },
+  'ja-cliente': { label: 'Já é cliente', cls: 'bg-green-50 text-green-600' },
   'sem-interesse': { label: 'Sem interesse', cls: 'bg-gray-100 text-gray-500' },
 };
 
 const ProspeccaoPage = () => {
   const totalCidades = P.regioes.reduce((s, r) => s + r.cidades.length, 0);
+  const aContatar = P.lojas.filter((l) => l.status === 'a-contatar').length;
+  const jaClientes = P.jaClientes || [];
 
   return (
     <>
@@ -38,9 +41,27 @@ const ProspeccaoPage = () => {
             </div>
             <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
               <div className="p-3 rounded-lg bg-green-50 text-green-600"><Store className="w-7 h-7" /></div>
-              <div><p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">Lojas mapeadas</p><p className="text-2xl font-bold text-gray-900 tabular-nums">{P.lojas.length}</p></div>
+              <div><p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">Prospects a contatar</p><p className="text-2xl font-bold text-gray-900 tabular-nums">{aContatar}</p></div>
             </div>
           </div>
+
+          {/* já atendemos na região */}
+          {jaClientes.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <div className="flex items-center gap-2 mb-1">
+                <CheckCircle2 className="w-5 h-5 text-green-600" />
+                <h3 className="text-lg font-bold text-gray-900">Já atendemos na região</h3>
+              </div>
+              <p className="text-xs text-gray-400 mb-3">Clientes que aparecem no relatório nessas cidades (não prospectar).</p>
+              <div className="flex flex-wrap gap-2">
+                {jaClientes.map((c) => (
+                  <span key={c.nome} className="text-sm bg-green-50 border border-green-100 text-green-700 rounded-full px-3 py-1">
+                    {c.nome} <span className="text-green-500/70">· {c.cidade}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* regiões e cidades */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
